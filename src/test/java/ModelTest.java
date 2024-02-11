@@ -1,6 +1,8 @@
 import model.User;
 import model.UserNote;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -17,23 +19,17 @@ public class ModelTest {
             SessionFactory sessionFactory =
                     new MetadataSources(registry)
                             .addAnnotatedClass(User.class)
-                            .addAnnotatedClass(UserNote.class)
                             .buildMetadata()
                             .buildSessionFactory();
-            sessionFactory.inTransaction(session -> {
-                User userAndrija = new User();
-                userAndrija.setUsername("Andrija");
-                userAndrija.setPassword("Nova sifra");
+            Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
+            User userAndrija = new User();
+            userAndrija.setUsername("Andrija");
+            userAndrija.setPassword("Nova sifra2");
 
-                session.persist(userAndrija);
-
-                UserNote userNote = new UserNote();
-                userNote.setUser(userAndrija);
-                userNote.setContent("Ovo su neke moje biljeske...");
-                userNote.setDateMade(LocalDateTime.now());
-
-                session.persist(new UserNote());
-            });
+            session.persist(userAndrija);
+            transaction.commit();
+            session.close();
         }
         catch (Exception e) {
             StandardServiceRegistryBuilder.destroy(registry);
