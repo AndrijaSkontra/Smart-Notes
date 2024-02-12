@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class UserNote {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Lob
@@ -22,6 +22,9 @@ public class UserNote {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public UserNote() {
+    }
 
     public Long getId() {
         return id;
@@ -49,5 +52,15 @@ public class UserNote {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "UserNote{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", dateMade=" + dateMade +
+                ", user=" + user.getUsername() +
+                '}';
     }
 }
