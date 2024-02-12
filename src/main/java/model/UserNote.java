@@ -12,7 +12,8 @@ public class UserNote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 16383)
+    @Lob
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Column(name = "date_made")
