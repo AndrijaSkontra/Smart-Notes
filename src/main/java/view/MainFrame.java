@@ -1,5 +1,7 @@
 package view;
 
+import controller.DatabaseService;
+import controller.UsersDatabaseConnection;
 import model.User;
 import net.miginfocom.swing.MigLayout;
 
@@ -12,6 +14,7 @@ public class MainFrame extends JFrame {
     private AuthPanel authPanel;
     private LoginPanel loginPanel;
     private RegisterPanel registerPanel;
+    private final DatabaseService databaseService = new DatabaseService(new UsersDatabaseConnection());
 
     public MainFrame() {
         setupFrame();
@@ -50,32 +53,53 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 boolean registerPressed = e.getSource() == registerPanel.getRegisterButton();
                 boolean backPressed = e.getSource() == registerPanel.getBackButton();
+
                 if (registerPressed) {
-                    String userName = registerPanel.getUsernameField().getText();
-                    String password = String.valueOf(registerPanel.getPasswordField().getPassword());
-                    String confirmPassword = String.valueOf(registerPanel.getConfirmPasswordField().getPassword());
-                    if (!isPasswordCorrect(password, confirmPassword)) {
-                        registerPanel.getUsernameField().setText("");
-                        registerPanel.getPasswordField().setText("");
-                        registerPanel.getConfirmPasswordField().setText("");
-                    }
-                    User user = new User(userName, password);
+                    handleRegisterPressed();
                 }
                 if (backPressed) {
-                    hidePanel(registerPanel);
-                    setShownPanel(authPanel);
+                    handleBackPressed();
                 }
             }
         });
     }
+
+    private void handleBackPressed() {
+        hidePanel(registerPanel);
+        setShownPanel(authPanel);
+    }
+
+    private void handleRegisterPressed() {
+        String userName = registerPanel.getUsernameField().getText();
+        String password = String.valueOf(registerPanel.getPasswordField().getPassword());
+        String confirmPassword = String.valueOf(registerPanel.getConfirmPasswordField().getPassword());
+        if (!isPasswordCorrect(password, confirmPassword)) {
+            cleanRegistrationFields();
+        } else {
+            addUserToDatabase(userName, password);
+        }
+    }
+
+    private void addUserToDatabase(String userName, String password) {
+        User user = new User(userName, password);
+        databaseService.addUserToDatabase(user);
+        cleanRegistrationFields();
+    }
+
+    private void cleanRegistrationFields() {
+        registerPanel.getUsernameField().setText("");
+        registerPanel.getPasswordField().setText("");
+        registerPanel.getConfirmPasswordField().setText("");
+    }
+
 
     private boolean isPasswordCorrect(String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
             JOptionPane.showMessageDialog(MainFrame.this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (password.length() < 3) {
-            JOptionPane.showMessageDialog(MainFrame.this, "Password must be at least 3 characters long", "Error", JOptionPane.ERROR_MESSAGE);
+        if (password.length() < 4) {
+            JOptionPane.showMessageDialog(MainFrame.this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
