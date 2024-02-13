@@ -3,6 +3,7 @@ package view;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
 public class RegisterPanel extends JPanel {
 
@@ -15,10 +16,11 @@ public class RegisterPanel extends JPanel {
     private JButton registerButton;
     private JButton backButton;
 
+    private ActionListener actionListener;
+
     public RegisterPanel() {
         initializeComponents();
         layoutComponents();
-        activateComponents();
     }
 
     private void initializeComponents() {
@@ -40,17 +42,43 @@ public class RegisterPanel extends JPanel {
         add(passwordField, "cell 1 1, align left");
         add(confirmPasswordLabel, "cell 0 2, align right");
         add(confirmPasswordField, "cell 1 2, align left");
-        add(registerButton, "cell 0 5, align center");
-        add(backButton, "cell 1 5, align center");
+        add(registerButton, "cell 1 5, align right");
+        add(backButton, "cell 0 5, align left");
     }
 
     private void activateComponents() {
+        registerButton.addActionListener(actionListener);
+        backButton.addActionListener(actionListener);
+    }
 
+    public void setActionListener(ActionListener actionListener) {
+        this.actionListener = actionListener;
+        activateComponents();
     }
 
     public void clearFields() {
         usernameField.setText("");
         passwordField.setText("");
         confirmPasswordField.setText("");
+    }
+
+    public JTextField getUsernameField() {
+        return usernameField;
+    }
+
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
+
+    public JPasswordField getConfirmPasswordField() {
+        return confirmPasswordField;
+    }
+
+    public JButton getRegisterButton() {
+        return registerButton;
+    }
+
+    public JButton getBackButton() {
+        return backButton;
     }
 }

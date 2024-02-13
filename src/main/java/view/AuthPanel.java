@@ -3,17 +3,20 @@ package view;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 
 public class AuthPanel extends JPanel {
 
     private JButton loginButton;
     private JButton registerButton;
 
+    private ActionListener actionListener;
+
     public AuthPanel() {
 
         initiliazeComponents();
         layoutComponents();
-        activateComponents();
+
     }
 
     private void initiliazeComponents() {
@@ -28,6 +31,20 @@ public class AuthPanel extends JPanel {
     }
 
     private void activateComponents() {
+        loginButton.addActionListener(actionListener);
+        registerButton.addActionListener(actionListener);
+    }
 
+    public void setActionListener(ActionListener actionListener) {
+        this.actionListener = actionListener;
+        activateComponents();
+    }
+
+    public JButton getLoginButton() {
+        return loginButton;
+    }
+
+    public JButton getRegisterButton() {
+        return registerButton;
     }
 }
