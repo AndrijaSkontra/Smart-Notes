@@ -6,10 +6,14 @@ import model.User;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainFrame extends JFrame {
+
+    private final CardLayout cardLayout = new CardLayout();
+    private final JPanel mainPanel = new JPanel(cardLayout);
 
     private AuthPanel authPanel;
     private LoginPanel loginPanel;
@@ -19,90 +23,31 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setupFrame();
         initFrameComponents();
+
+        mainPanel.add(authPanel, "AuthPanel");
+        mainPanel.add(loginPanel, "LoginPanel");
+        mainPanel.add(registerPanel, "RegisterPanel");
+
         activateFrame();
 
-        setShownPanel(authPanel);
-    }
+        setLayout(new MigLayout());
+        add(mainPanel, "w 100%, h 100%");
 
-    private void hidePanel(JPanel panel) {
-        panel.setVisible(false);
-        add(panel, "hidemode 3");
-    }
-
-    private void setShownPanel(JPanel panel) {
-        panel.setVisible(true);
-        add(panel, "w 100%, h 100%");
     }
 
     private void initFrameComponents() {
         authPanel = new AuthPanel();
         loginPanel = new LoginPanel();
         registerPanel = new RegisterPanel();
+        // TODO cleaning needed
+        registerPanel.setCardLayout(cardLayout);
+        registerPanel.setMainPanel(mainPanel);
+        registerPanel.setDatabaseService(databaseService);
     }
-
 
     private void activateFrame() {
         activateAuthPanel();
         activateLoginPanel();
-        activateRegisterPanel();
-    }
-
-    private void activateRegisterPanel() {
-        registerPanel.setActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean registerPressed = e.getSource() == registerPanel.getRegisterButton();
-                boolean backPressed = e.getSource() == registerPanel.getBackButton();
-
-                if (registerPressed) {
-                    handleRegisterPressed();
-                }
-                if (backPressed) {
-                    handleBackPressed();
-                }
-            }
-        });
-    }
-
-    private void handleBackPressed() {
-        hidePanel(registerPanel);
-        setShownPanel(authPanel);
-    }
-
-    private void handleRegisterPressed() {
-        String userName = registerPanel.getUsernameField().getText();
-        String password = String.valueOf(registerPanel.getPasswordField().getPassword());
-        String confirmPassword = String.valueOf(registerPanel.getConfirmPasswordField().getPassword());
-        if (!isPasswordCorrect(password, confirmPassword)) {
-            cleanRegistrationFields();
-        } else {
-            addUserToDatabase(userName, password);
-        }
-    }
-
-    private void addUserToDatabase(String userName, String password) {
-        User user = new User(userName, password);
-        databaseService.addUserToDatabase(user);
-        cleanRegistrationFields();
-    }
-
-    private void cleanRegistrationFields() {
-        registerPanel.getUsernameField().setText("");
-        registerPanel.getPasswordField().setText("");
-        registerPanel.getConfirmPasswordField().setText("");
-    }
-
-
-    private boolean isPasswordCorrect(String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(MainFrame.this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        if (password.length() < 4) {
-            JOptionPane.showMessageDialog(MainFrame.this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
     }
 
     private void activateLoginPanel() {
@@ -115,8 +60,7 @@ public class MainFrame extends JFrame {
                     System.out.println("Login pressed");
                 }
                 if (backPressed) {
-                    hidePanel(loginPanel);
-                    setShownPanel(authPanel);
+                    cardLayout.show(mainPanel, "AuthPanel");
                 }
             }
         });
@@ -129,12 +73,10 @@ public class MainFrame extends JFrame {
                 boolean loginPressed = e.getSource() == authPanel.getLoginButton();
                 boolean registerPressed = e.getSource() == authPanel.getRegisterButton();
                 if (loginPressed) {
-                    hidePanel(authPanel);
-                    setShownPanel(loginPanel);
+                    cardLayout.show(mainPanel, "LoginPanel");
                 }
                 if (registerPressed) {
-                    hidePanel(authPanel);
-                    setShownPanel(registerPanel);
+                    cardLayout.show(mainPanel, "RegisterPanel");
                 }
             }
         });

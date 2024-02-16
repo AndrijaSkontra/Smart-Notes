@@ -1,11 +1,16 @@
 package view;
 
+import controller.DatabaseService;
+import lombok.Setter;
+import model.User;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class RegisterPanel extends JPanel {
+public class RegisterPanel extends JPanel implements ActionListener{
 
     private JLabel usernameLabel;
     private JLabel passwordLabel;
@@ -16,11 +21,15 @@ public class RegisterPanel extends JPanel {
     private JButton registerButton;
     private JButton backButton;
 
-    private ActionListener actionListener;
+    @Setter private CardLayout cardLayout;
+    @Setter private JPanel mainPanel;
+
+    @Setter private DatabaseService databaseService;
 
     public RegisterPanel() {
         initializeComponents();
         layoutComponents();
+        activateComponents();
     }
 
     private void initializeComponents() {
@@ -47,38 +56,52 @@ public class RegisterPanel extends JPanel {
     }
 
     private void activateComponents() {
-        registerButton.addActionListener(actionListener);
-        backButton.addActionListener(actionListener);
+        registerButton.addActionListener(this);
+        backButton.addActionListener(this);
     }
 
-    public void setActionListener(ActionListener actionListener) {
-        this.actionListener = actionListener;
-        activateComponents();
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        boolean registerPressed = e.getSource() == registerButton;
+        boolean backPressed = e.getSource() == backButton;
+
+        if (registerPressed) {
+            handleRegisterPressed();
+        }
+        if (backPressed) {
+            handleBackPressed();
+        }
     }
 
-    public void clearFields() {
+    private void handleBackPressed() {
+        cardLayout.show(mainPanel, "AuthPanel");
+    }
+
+    private void handleRegisterPressed() {
+        String userName = usernameField.getText();
+        String password = String.valueOf(passwordField.getPassword());
+        String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+        if (isPasswordDataCorrect(password, confirmPassword)) {
+            databaseService.addUserToDatabase(new User(userName, password));
+        }
+        cleanRegistrationFields();
+    }
+
+    private void cleanRegistrationFields() {
         usernameField.setText("");
         passwordField.setText("");
         confirmPasswordField.setText("");
     }
 
-    public JTextField getUsernameField() {
-        return usernameField;
-    }
-
-    public JPasswordField getPasswordField() {
-        return passwordField;
-    }
-
-    public JPasswordField getConfirmPasswordField() {
-        return confirmPasswordField;
-    }
-
-    public JButton getRegisterButton() {
-        return registerButton;
-    }
-
-    public JButton getBackButton() {
-        return backButton;
+    private boolean isPasswordDataCorrect(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (password.length() < 4) {
+            JOptionPane.showMessageDialog(this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 }
