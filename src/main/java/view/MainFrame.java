@@ -43,27 +43,14 @@ public class MainFrame extends JFrame {
         registerPanel.setCardLayout(cardLayout);
         registerPanel.setMainPanel(mainPanel);
         registerPanel.setDatabaseService(databaseService);
+
+        loginPanel.setCardLayout(cardLayout);
+        loginPanel.setMainPanel(mainPanel);
+        loginPanel.setDatabaseService(databaseService);
     }
 
     private void activateFrame() {
         activateAuthPanel();
-        activateLoginPanel();
-    }
-
-    private void activateLoginPanel() {
-        loginPanel.setActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean loginPressed = e.getSource() == loginPanel.getLoginButton();
-                boolean backPressed = e.getSource() == loginPanel.getBackButton();
-                if (loginPressed) {
-                    System.out.println("Login pressed");
-                }
-                if (backPressed) {
-                    cardLayout.show(mainPanel, "AuthPanel");
-                }
-            }
-        });
     }
 
     private void activateAuthPanel() {

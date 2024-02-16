@@ -2,12 +2,6 @@ package controller;
 
 import model.User;
 import model.UserNote;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +24,7 @@ public class DatabaseServiceTest {
     public void testAddAndGetUser() {
         User user = new User("TestUser", "TestPassword");
         databaseService.addUserToDatabase(user);
-        User retrievedUser = databaseService.getUserFromDatabase(user.getId());
+        User retrievedUser = databaseService.getUserFromDatabaseById(user.getId());
         assertNotNull(retrievedUser);
         assertEquals(user.getUsername(), retrievedUser.getUsername());
         assertEquals(user.getPassword(), retrievedUser.getPassword());
@@ -38,7 +32,7 @@ public class DatabaseServiceTest {
 
     @Test
     public void testAddAndGetUserNote() {
-        User user = new User("TestUser", "TestPassword");
+        User user = new User("noviuser1", "TestPassword");
         UserNote userNote = new UserNote();
         userNote.setContent("TestNote");
         userNote.setDateMade(LocalDateTime.now());
@@ -47,7 +41,7 @@ public class DatabaseServiceTest {
 
         databaseService.addUserToDatabase(user);
         databaseService.addUserNoteToDatabase(userNote);
-        User retrievedUser = databaseService.getUserFromDatabase(user.getId());
+        User retrievedUser = databaseService.getUserFromDatabaseByUsername(user.getUsername());
         assertNotNull(retrievedUser);
         UserNote retrievedNote = databaseService.getUserNoteFromDatabase(userNote.getId());
         assertNotNull(retrievedNote);

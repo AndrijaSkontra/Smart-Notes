@@ -83,6 +83,8 @@ public class RegisterPanel extends JPanel implements ActionListener{
         String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
         if (isPasswordDataCorrect(password, confirmPassword)) {
             databaseService.addUserToDatabase(new User(userName, password));
+            JOptionPane.showMessageDialog(this, "User registered successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            handleBackPressed();
         }
         cleanRegistrationFields();
     }

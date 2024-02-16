@@ -1,11 +1,16 @@
 package view;
 
+import controller.DatabaseService;
+import lombok.Setter;
+import model.User;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LoginPanel extends JPanel {
+public class LoginPanel extends JPanel implements ActionListener{
 
     private JLabel usernameLabel;
     private JLabel passwordLabel;
@@ -14,11 +19,16 @@ public class LoginPanel extends JPanel {
     private JButton loginButton;
     private JButton backButton;
 
-    private ActionListener actionListener;
+    @Setter
+    private CardLayout cardLayout;
+    @Setter private JPanel mainPanel;
+
+    @Setter private DatabaseService databaseService;
 
     public LoginPanel() {
         initializeComponents();
         layoutComponents();
+        activateComponents();
     }
 
     private void initializeComponents() {
@@ -41,13 +51,8 @@ public class LoginPanel extends JPanel {
     }
 
     private void activateComponents() {
-        loginButton.addActionListener(actionListener);
-        backButton.addActionListener(actionListener);
-    }
-
-    public void setActionListener(ActionListener actionListener) {
-        this.actionListener = actionListener;
-        activateComponents();
+        loginButton.addActionListener(this);
+        backButton.addActionListener(this);
     }
 
     public void clearFields() {
@@ -69,5 +74,43 @@ public class LoginPanel extends JPanel {
 
     public JButton getBackButton() {
         return backButton;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        boolean loginPressed = e.getSource() == loginButton;
+        boolean backPressed = e.getSource() == backButton;
+
+        if (loginPressed) {
+            handleLoginPressed();
+        }
+        if (backPressed) {
+            handleBackPressed();
+        }
+    }
+
+    private void handleLoginPressed() {
+        String username = usernameField.getText();
+        User user;
+        try {
+            user = databaseService.getUserFromDatabaseByUsername(username);
+            validateUserDatabaseData(user);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "User not found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void validateUserDatabaseData(User user) {
+        String password = String.valueOf(passwordField.getPassword());
+        if (user.getPassword().equals(password)) {
+            // TODO open user notes panel
+            System.out.println("User logged in");
+        } else {
+            JOptionPane.showMessageDialog(this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleBackPressed() {
+        cardLayout.show(mainPanel, "AuthPanel");
     }
 }
