@@ -40,7 +40,7 @@ public class RegisterPanel extends JPanel implements ActionListener{
         registerButton = new JButton("Register");
         backButton = new JButton("Back");
 
-        databaseServiceSingleton = DatabaseServiceSingleton.getInstance(new UsersDatabaseConnection());
+        databaseServiceSingleton = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
         mainFrame = MainFrame.getInstance();
     }
 

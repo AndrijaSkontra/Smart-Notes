@@ -41,7 +41,7 @@ public class LoginPanel extends JPanel implements ActionListener{
         backButton = new JButton("Back");
 
         mainFrame = MainFrame.getInstance();
-        databaseService = DatabaseServiceSingleton.getInstance(new UsersDatabaseConnection());
+        databaseService = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
     }
 
     private void layoutComponents() {

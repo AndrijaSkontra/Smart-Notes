@@ -12,6 +12,22 @@ import static org.hibernate.cfg.SchemaToolingSettings.HBM2DDL_AUTO;
 
 public class UsersDatabaseConnection implements DatabaseConnection{
 
+    public static volatile UsersDatabaseConnection instance;
+
+    private UsersDatabaseConnection() {
+    }
+
+    public static UsersDatabaseConnection getInstance() {
+        if (instance == null) {
+            synchronized (UsersDatabaseConnection.class) {
+                if (instance == null) {
+                    instance = new UsersDatabaseConnection();
+                }
+            }
+        }
+        return instance;
+    }
+
     @Override
     public SessionFactory getSessionFactory() {
         var sessionFactory = new Configuration()
