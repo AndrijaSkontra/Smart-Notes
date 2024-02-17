@@ -79,15 +79,21 @@ public class LoginPanel extends JPanel implements ActionListener{
             user = databaseService.getUserFromDatabaseByUsername(username);
             boolean isPasswordCorrect = databaseService.isUserDataValid(user, String.valueOf(passwordField.getPassword()));
             if (isPasswordCorrect) {
-                // mainFrame.hidePanel(this);
-                // mainFrame.showPanel(mainFrame.getMainPanel());
-                System.out.println("Login successful");
+                handleLoginSuccesfull(user);
             } else {
                 JOptionPane.showMessageDialog(this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "User not found", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void handleLoginSuccesfull(User user) {
+        mainFrame.hidePanel(this);
+        mainFrame.showPanel(mainFrame.getUserPanel());
+        mainFrame.setSize(600, 500);
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.getUserPanel().setUser(user);
     }
 
     private void handleBackPressed() {

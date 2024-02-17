@@ -12,6 +12,7 @@ public class MainFrame extends JFrame {
     private AuthPanel authPanel;
     private LoginPanel loginPanel;
     private RegisterPanel registerPanel;
+    private UserPanel userPanel;
 
     private MainFrame() {
         setTitle("Simple notes");
@@ -20,6 +21,14 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setLayout(new MigLayout());
+    }
+
+    public void initFrameComponents() {
+        authPanel = new AuthPanel();
+        loginPanel = new LoginPanel();
+        registerPanel = new RegisterPanel();
+        userPanel = new UserPanel();
+        showPanel(authPanel);
     }
 
     public static MainFrame getInstance() {
@@ -41,12 +50,5 @@ public class MainFrame extends JFrame {
     public void hidePanel(JPanel panel) {
         panel.setVisible(false);
         add(panel, "hidemode 3");
-    }
-
-    public void initFrameComponents() {
-        authPanel = new AuthPanel();
-        loginPanel = new LoginPanel();
-        registerPanel = new RegisterPanel();
-        showPanel(authPanel);
     }
 }
