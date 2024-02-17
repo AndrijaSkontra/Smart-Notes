@@ -14,7 +14,8 @@ public class RunApp {
             } catch (UnsupportedLookAndFeelException e) {
                 throw new RuntimeException(e);
             }
-            MainFrame mainFrame = new MainFrame();
+            var mainFrame = MainFrame.getInstance();
+            mainFrame.initFrameComponents();
         });
     }
 }

@@ -1,27 +1,32 @@
 package view;
 
+import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class AuthPanel extends JPanel {
+public class AuthPanel extends JPanel implements ActionListener {
 
+    @Getter
     private JButton loginButton;
+    @Getter
     private JButton registerButton;
 
-    private ActionListener actionListener;
+    private MainFrame mainFrame;
 
     public AuthPanel() {
 
         initiliazeComponents();
         layoutComponents();
-
+        activateComponents();
     }
 
     private void initiliazeComponents() {
         loginButton = new JButton("Login");
         registerButton = new JButton("Register");
+        mainFrame = MainFrame.getInstance();
     }
 
     private void layoutComponents() {
@@ -31,20 +36,21 @@ public class AuthPanel extends JPanel {
     }
 
     private void activateComponents() {
-        loginButton.addActionListener(actionListener);
-        registerButton.addActionListener(actionListener);
+        loginButton.addActionListener(this);
+        registerButton.addActionListener(this);
     }
 
-    public void setActionListener(ActionListener actionListener) {
-        this.actionListener = actionListener;
-        activateComponents();
-    }
-
-    public JButton getLoginButton() {
-        return loginButton;
-    }
-
-    public JButton getRegisterButton() {
-        return registerButton;
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        boolean loginPressed = e.getSource() == getLoginButton();
+        boolean registerPressed = e.getSource() == getRegisterButton();
+        if (loginPressed) {
+            mainFrame.hidePanel(mainFrame.getAuthPanel());
+            mainFrame.showPanel(mainFrame.getLoginPanel());
+        }
+        if (registerPressed) {
+            mainFrame.hidePanel(mainFrame.getAuthPanel());
+            mainFrame.showPanel(mainFrame.getRegisterPanel());
+        }
     }
 }

@@ -1,80 +1,52 @@
 package view;
 
-import controller.DatabaseService;
-import controller.UsersDatabaseConnection;
-import model.User;
+import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+@Getter
 public class MainFrame extends JFrame {
 
-    private final CardLayout cardLayout = new CardLayout();
-    private final JPanel mainPanel = new JPanel(cardLayout);
-
+    private static volatile MainFrame instance;
     private AuthPanel authPanel;
     private LoginPanel loginPanel;
     private RegisterPanel registerPanel;
-    private final DatabaseService databaseService = new DatabaseService(new UsersDatabaseConnection());
 
-    public MainFrame() {
-        setupFrame();
-        initFrameComponents();
-
-        mainPanel.add(authPanel, "AuthPanel");
-        mainPanel.add(loginPanel, "LoginPanel");
-        mainPanel.add(registerPanel, "RegisterPanel");
-
-        activateFrame();
-
-        setLayout(new MigLayout());
-        add(mainPanel, "w 100%, h 100%");
-
-    }
-
-    private void initFrameComponents() {
-        authPanel = new AuthPanel();
-        loginPanel = new LoginPanel();
-        registerPanel = new RegisterPanel();
-        // TODO cleaning needed
-        registerPanel.setCardLayout(cardLayout);
-        registerPanel.setMainPanel(mainPanel);
-        registerPanel.setDatabaseService(databaseService);
-
-        loginPanel.setCardLayout(cardLayout);
-        loginPanel.setMainPanel(mainPanel);
-        loginPanel.setDatabaseService(databaseService);
-    }
-
-    private void activateFrame() {
-        activateAuthPanel();
-    }
-
-    private void activateAuthPanel() {
-        authPanel.setActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean loginPressed = e.getSource() == authPanel.getLoginButton();
-                boolean registerPressed = e.getSource() == authPanel.getRegisterButton();
-                if (loginPressed) {
-                    cardLayout.show(mainPanel, "LoginPanel");
-                }
-                if (registerPressed) {
-                    cardLayout.show(mainPanel, "RegisterPanel");
-                }
-            }
-        });
-    }
-
-    private void setupFrame() {
+    private MainFrame() {
         setTitle("Simple notes");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
         setLayout(new MigLayout());
+    }
+
+    public static MainFrame getInstance() {
+        if (instance == null) {
+            synchronized (MainFrame.class) {
+                if (instance == null) {
+                    instance = new MainFrame();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public void showPanel(JPanel panel) {
+        panel.setVisible(true);
+        add(panel, "w 100%, h 100%, hidemode 0");
+    }
+
+    public void hidePanel(JPanel panel) {
+        panel.setVisible(false);
+        add(panel, "hidemode 3");
+    }
+
+    public void initFrameComponents() {
+        authPanel = new AuthPanel();
+        loginPanel = new LoginPanel();
+        registerPanel = new RegisterPanel();
+        showPanel(authPanel);
     }
 }

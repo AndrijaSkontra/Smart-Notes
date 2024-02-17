@@ -5,16 +5,29 @@ import model.UserNote;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
+import javax.swing.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DatabaseService {
+public class DatabaseServiceSingleton {
 
+    private static volatile DatabaseServiceSingleton instance;
     private DatabaseConnection dc;
     private SessionFactory sessionFactory;
 
-    public DatabaseService(DatabaseConnection dc) {
+    private DatabaseServiceSingleton(DatabaseConnection dc) {
         this.dc = dc;
         this.sessionFactory = dc.getSessionFactory();
+    }
+
+    public static DatabaseServiceSingleton getInstance(DatabaseConnection dc) {
+        if (instance == null) {
+            synchronized (DatabaseServiceSingleton.class) {
+                if (instance == null) {
+                    instance = new DatabaseServiceSingleton(dc);
+                }
+            }
+        }
+        return instance;
     }
 
     public void addUserToDatabase(User user) {
@@ -47,5 +60,9 @@ public class DatabaseService {
         AtomicReference<UserNote> userNoteRef = new AtomicReference<>();
         sessionFactory.inTransaction(session -> userNoteRef.set(session.find(UserNote.class, id)));
         return userNoteRef.get();
+    }
+
+    public boolean isUserDataValid(User user, String password) {
+        return user.getPassword().equals(password);
     }
 }

@@ -1,12 +1,12 @@
 package view;
 
-import controller.DatabaseService;
-import lombok.Setter;
+import controller.DatabaseServiceSingleton;
+import controller.UsersDatabaseConnection;
+import lombok.Getter;
 import model.User;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -14,16 +14,17 @@ public class LoginPanel extends JPanel implements ActionListener{
 
     private JLabel usernameLabel;
     private JLabel passwordLabel;
+    @Getter
     private JTextField usernameField;
+    @Getter
     private JPasswordField passwordField;
+    @Getter
     private JButton loginButton;
+    @Getter
     private JButton backButton;
 
-    @Setter
-    private CardLayout cardLayout;
-    @Setter private JPanel mainPanel;
-
-    @Setter private DatabaseService databaseService;
+    private MainFrame mainFrame;
+    private DatabaseServiceSingleton databaseService;
 
     public LoginPanel() {
         initializeComponents();
@@ -38,6 +39,9 @@ public class LoginPanel extends JPanel implements ActionListener{
         passwordField = new JPasswordField(15);
         loginButton = new JButton("Login");
         backButton = new JButton("Back");
+
+        mainFrame = MainFrame.getInstance();
+        databaseService = DatabaseServiceSingleton.getInstance(new UsersDatabaseConnection());
     }
 
     private void layoutComponents() {
@@ -53,27 +57,6 @@ public class LoginPanel extends JPanel implements ActionListener{
     private void activateComponents() {
         loginButton.addActionListener(this);
         backButton.addActionListener(this);
-    }
-
-    public void clearFields() {
-        usernameField.setText("");
-        passwordField.setText("");
-    }
-
-    public JTextField getUsernameField() {
-        return usernameField;
-    }
-
-    public JPasswordField getPasswordField() {
-        return passwordField;
-    }
-
-    public JButton getLoginButton() {
-        return loginButton;
-    }
-
-    public JButton getBackButton() {
-        return backButton;
     }
 
     @Override
@@ -94,23 +77,21 @@ public class LoginPanel extends JPanel implements ActionListener{
         User user;
         try {
             user = databaseService.getUserFromDatabaseByUsername(username);
-            validateUserDatabaseData(user);
+            boolean isPasswordCorrect = databaseService.isUserDataValid(user, String.valueOf(passwordField.getPassword()));
+            if (isPasswordCorrect) {
+                // mainFrame.hidePanel(this);
+                // mainFrame.showPanel(mainFrame.getMainPanel());
+                System.out.println("Login successful");
+            } else {
+                JOptionPane.showMessageDialog(this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "User not found", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void validateUserDatabaseData(User user) {
-        String password = String.valueOf(passwordField.getPassword());
-        if (user.getPassword().equals(password)) {
-            // TODO open user notes panel
-            System.out.println("User logged in");
-        } else {
-            JOptionPane.showMessageDialog(this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private void handleBackPressed() {
-        cardLayout.show(mainPanel, "AuthPanel");
+        mainFrame.hidePanel(this);
+        mainFrame.showPanel(mainFrame.getAuthPanel());
     }
 }

@@ -1,12 +1,11 @@
 package view;
 
-import controller.DatabaseService;
-import lombok.Setter;
+import controller.DatabaseServiceSingleton;
+import controller.UsersDatabaseConnection;
 import model.User;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -21,10 +20,9 @@ public class RegisterPanel extends JPanel implements ActionListener{
     private JButton registerButton;
     private JButton backButton;
 
-    @Setter private CardLayout cardLayout;
-    @Setter private JPanel mainPanel;
-
-    @Setter private DatabaseService databaseService;
+    private DatabaseServiceSingleton databaseServiceSingleton;
+    private MainFrame mainFrame;
+    private final ValidationFormData validationFormData = new ValidationFormData();
 
     public RegisterPanel() {
         initializeComponents();
@@ -41,6 +39,9 @@ public class RegisterPanel extends JPanel implements ActionListener{
         confirmPasswordField = new JPasswordField(15);
         registerButton = new JButton("Register");
         backButton = new JButton("Back");
+
+        databaseServiceSingleton = DatabaseServiceSingleton.getInstance(new UsersDatabaseConnection());
+        mainFrame = MainFrame.getInstance();
     }
 
     private void layoutComponents() {
@@ -74,15 +75,16 @@ public class RegisterPanel extends JPanel implements ActionListener{
     }
 
     private void handleBackPressed() {
-        cardLayout.show(mainPanel, "AuthPanel");
+        mainFrame.hidePanel(this);
+        mainFrame.showPanel(mainFrame.getAuthPanel());
     }
 
     private void handleRegisterPressed() {
         String userName = usernameField.getText();
         String password = String.valueOf(passwordField.getPassword());
         String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
-        if (isPasswordDataCorrect(password, confirmPassword)) {
-            databaseService.addUserToDatabase(new User(userName, password));
+        if (validationFormData.isPasswordDataCorrect(password, confirmPassword)) {
+            databaseServiceSingleton.addUserToDatabase(new User(userName, password));
             JOptionPane.showMessageDialog(this, "User registered successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
             handleBackPressed();
         }
@@ -95,15 +97,29 @@ public class RegisterPanel extends JPanel implements ActionListener{
         confirmPasswordField.setText("");
     }
 
-    private boolean isPasswordDataCorrect(String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+//    private boolean isPasswordDataCorrect(String password, String confirmPassword) {
+//        if (!password.equals(confirmPassword)) {
+//            JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
+//        if (password.length() < 4) {
+//            JOptionPane.showMessageDialog(this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
+//        return true;
+//    }
+
+    private class ValidationFormData {
+        private boolean isPasswordDataCorrect(String password, String confirmPassword) {
+            if (!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(RegisterPanel.this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (password.length() < 4) {
+                JOptionPane.showMessageDialog(RegisterPanel.this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            return true;
         }
-        if (password.length() < 4) {
-            JOptionPane.showMessageDialog(this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
     }
 }
