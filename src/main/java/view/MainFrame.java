@@ -13,6 +13,7 @@ public class MainFrame extends JFrame {
     private LoginPanel loginPanel;
     private RegisterPanel registerPanel;
     private UserPanel userPanel;
+    private NotesPanel notesPanel;
 
     private MainFrame() {
         setTitle("Simple notes");
@@ -28,6 +29,7 @@ public class MainFrame extends JFrame {
         loginPanel = new LoginPanel();
         registerPanel = new RegisterPanel();
         userPanel = new UserPanel();
+        notesPanel = new NotesPanel();
         showPanel(authPanel);
     }
 
@@ -47,7 +49,17 @@ public class MainFrame extends JFrame {
         add(panel, "w 100%, h 100%, hidemode 0");
     }
 
+    public void showPanel(JScrollPane notesScrollPane) {
+        notesScrollPane.setVisible(true);
+        add(notesScrollPane, "w 100%, h 100%, hidemode 0");
+    }
+
     public void hidePanel(JPanel panel) {
+        panel.setVisible(false);
+        add(panel, "hidemode 3");
+    }
+
+    public void hidePanel(JScrollPane panel) {
         panel.setVisible(false);
         add(panel, "hidemode 3");
     }

@@ -1,23 +1,30 @@
 package view;
 
+import controller.DatabaseServiceSingleton;
+import controller.UsersDatabaseConnection;
 import lombok.Setter;
 import model.User;
+import model.UserNote;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 
 public class UserPanel extends JPanel implements ActionListener {
 
     private JLabel usernameLabel;
     private JTextArea notesTextArea;
+    private JScrollPane notesScrollPane;
     private JButton addNoteButton;
     private JButton signOutButton;
     private JButton seeNotesButton;
 
     private MainFrame mainFrame;
+
+    private DatabaseServiceSingleton databaseServiceSingleton;
 
     private User user;
 
@@ -31,16 +38,22 @@ public class UserPanel extends JPanel implements ActionListener {
         usernameLabel = new JLabel();
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 20));
         notesTextArea = new JTextArea();
+        notesTextArea.setLineWrap(true);
+        notesTextArea.setWrapStyleWord(true);
+        notesScrollPane = new JScrollPane(notesTextArea);
+        notesScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         addNoteButton = new JButton("Add note");
         signOutButton = new JButton("Sign out");
         seeNotesButton = new JButton("See notes");
+
         mainFrame = MainFrame.getInstance();
+        databaseServiceSingleton = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
     }
 
     private void layoutComponents() {
-        setLayout(new MigLayout("", "[grow][grow]", "[grow][grow][grow][grow][grow]"));
+        setLayout(new MigLayout("debug", "[grow][grow]", "[grow][grow][grow][grow][grow]"));
         add(usernameLabel, "cell 0 0, spanx 2, align center");
-        add(notesTextArea, "grow, cell 0 1, spany 3, align center");
+        add(notesScrollPane, "grow, cell 0 1, spany 3, align center");
         add(addNoteButton, "cell 0 4, align center");
         add(seeNotesButton, "cell 1 3, align right");
         add(signOutButton, "cell 1 4, align right");
@@ -58,14 +71,33 @@ public class UserPanel extends JPanel implements ActionListener {
         boolean signOutPressed = e.getSource() == signOutButton;
         boolean seeNotesPressed = e.getSource() == seeNotesButton;
         if (addNotePressed) {
-            System.out.println("Add note");
+            addNoteToDatabase();
         }
         if (signOutPressed) {
             handleSignOutPressed();
         }
         if (seeNotesPressed) {
-            System.out.println("See notes");
+            handleSeeNotesPressed();
         }
+    }
+
+    private void addNoteToDatabase() {
+        UserNote userNote = new UserNote();
+        userNote.setContent(notesTextArea.getText());
+        userNote.setDateMade(LocalDateTime.now());
+        userNote.setUser(user);
+        databaseServiceSingleton.addUserNoteToDatabase(userNote);
+    }
+
+    private void handleSeeNotesPressed() {
+        NotesPanel notesPanel = mainFrame.getNotesPanel();
+        JScrollPane notesScrollPane = new JScrollPane(notesPanel);
+        notesScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        notesScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        notesPanel.setUser(user);
+        System.out.println("gets exectued");
+        mainFrame.hidePanel(mainFrame.getUserPanel());
+        mainFrame.showPanel(notesScrollPane);
     }
 
     private void handleSignOutPressed() {

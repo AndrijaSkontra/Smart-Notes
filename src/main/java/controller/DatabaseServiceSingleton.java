@@ -4,8 +4,10 @@ import model.User;
 import model.UserNote;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import view.NotesPanel;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class DatabaseServiceSingleton {
@@ -64,5 +66,17 @@ public class DatabaseServiceSingleton {
 
     public boolean isUserDataValid(User user, String password) {
         return user.getPassword().equals(password);
+    }
+
+    public ArrayList<UserNote> getAListOfUserNotes(User user) {
+        Long userId = user.getId();
+        ArrayList<UserNote> singleNotesFromUser = new ArrayList<>();
+        sessionFactory.inTransaction(session -> {
+            String hql = "FROM UserNote U WHERE U.user.id = :user_Id";
+            Query query = session.createQuery(hql);
+            query.setParameter("user_Id", userId);
+            singleNotesFromUser.addAll(query.list());
+        });
+        return singleNotesFromUser;
     }
 }
