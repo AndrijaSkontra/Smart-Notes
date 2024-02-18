@@ -14,6 +14,7 @@ public class MainFrame extends JFrame {
     private RegisterPanel registerPanel;
     private UserPanel userPanel;
     private NotesPanel notesPanel;
+    private JScrollPane notesScrollPane;
 
     private MainFrame() {
         setTitle("Simple notes");
@@ -30,6 +31,9 @@ public class MainFrame extends JFrame {
         registerPanel = new RegisterPanel();
         userPanel = new UserPanel();
         notesPanel = new NotesPanel();
+        notesScrollPane = new JScrollPane(notesPanel);
+        notesScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        notesScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         showPanel(authPanel);
     }
 

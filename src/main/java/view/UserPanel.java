@@ -91,13 +91,9 @@ public class UserPanel extends JPanel implements ActionListener {
 
     private void handleSeeNotesPressed() {
         NotesPanel notesPanel = mainFrame.getNotesPanel();
-        JScrollPane notesScrollPane = new JScrollPane(notesPanel);
-        notesScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        notesScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         notesPanel.setUser(user);
-        System.out.println("gets exectued");
         mainFrame.hidePanel(mainFrame.getUserPanel());
-        mainFrame.showPanel(notesScrollPane);
+        mainFrame.showPanel(mainFrame.getNotesScrollPane());
     }
 
     private void handleSignOutPressed() {

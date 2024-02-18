@@ -62,7 +62,7 @@ public class NotesPanel extends JPanel implements ActionListener{
     }
 
     private void handleBackPressed() {
-        mainFrame.hidePanel(this);
+        mainFrame.hidePanel(mainFrame.getNotesScrollPane());
         mainFrame.showPanel(mainFrame.getUserPanel());
     }
 
