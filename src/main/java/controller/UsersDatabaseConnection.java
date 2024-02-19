@@ -2,6 +2,7 @@ package controller;
 
 import model.User;
 import model.UserNote;
+import model.UserSubscription;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -33,7 +34,7 @@ public class UsersDatabaseConnection implements DatabaseConnection{
         var sessionFactory = new Configuration()
                 .addAnnotatedClass(User.class)
                 .addAnnotatedClass(UserNote.class)
-
+                .addAnnotatedClass(UserSubscription.class)
                 .setProperty(URL, "jdbc:mysql://localhost:3306/smart_notes")
                 .setProperty(USER, "root")
                 .setProperty(PASS, "Kokafaca1!")

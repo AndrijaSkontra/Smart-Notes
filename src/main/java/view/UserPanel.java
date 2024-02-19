@@ -36,7 +36,7 @@ public class UserPanel extends JPanel implements ActionListener {
 
     private void initializeComponents() {
         usernameLabel = new JLabel();
-        usernameLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        usernameLabel.setFont(new Font("Serif", Font.BOLD, 20));
         notesTextArea = new JTextArea();
         notesTextArea.setLineWrap(true);
         notesTextArea.setWrapStyleWord(true);
@@ -72,6 +72,7 @@ public class UserPanel extends JPanel implements ActionListener {
         boolean seeNotesPressed = e.getSource() == seeNotesButton;
         if (addNotePressed) {
             addNoteToDatabase();
+            notesTextArea.setText("");
         }
         if (signOutPressed) {
             handleSignOutPressed();

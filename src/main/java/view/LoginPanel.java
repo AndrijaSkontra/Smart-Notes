@@ -80,6 +80,8 @@ public class LoginPanel extends JPanel implements ActionListener{
             boolean isPasswordCorrect = databaseService.isUserDataValid(user, String.valueOf(passwordField.getPassword()));
             if (isPasswordCorrect) {
                 handleLoginSuccesfull(user);
+                passwordField.setText("");
+                usernameField.setText("");
             } else {
                 JOptionPane.showMessageDialog(this, "Incorrect password", "Error", JOptionPane.ERROR_MESSAGE);
             }
