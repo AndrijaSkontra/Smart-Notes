@@ -51,7 +51,7 @@ public class UserPanel extends JPanel implements ActionListener {
     }
 
     private void layoutComponents() {
-        setLayout(new MigLayout("debug", "[grow][grow]", "[grow][grow][grow][grow][grow]"));
+        setLayout(new MigLayout("", "[grow][grow]", "[grow][grow][grow][grow][grow]"));
         add(usernameLabel, "cell 0 0, spanx 2, align center");
         add(notesScrollPane, "grow, cell 0 1, spany 3, align center");
         add(addNoteButton, "cell 0 4, align center");

@@ -2,7 +2,6 @@ package view;
 
 import controller.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
-import lombok.Setter;
 import model.User;
 import model.UserNote;
 import net.miginfocom.swing.MigLayout;
@@ -20,8 +19,7 @@ public class NotesPanel extends JPanel implements ActionListener{
     private JButton backToUserPanelButton;
     private MainFrame mainFrame;
 
-    public NotesPanel() {
-    }
+    private ArrayList<UserNote> listOfUserNotes;
 
     public void setUser(User user) {
         this.user = user;
@@ -33,7 +31,7 @@ public class NotesPanel extends JPanel implements ActionListener{
     }
 
     private void initializeComponents() {
-        ArrayList<UserNote> listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
+        listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
         singleNotePanels = new ArrayList<>();
         for (UserNote userNote : listOfUserNotes) {
             singleNotePanels.add(new SingleNotePanel(userNote));
@@ -62,8 +60,28 @@ public class NotesPanel extends JPanel implements ActionListener{
     }
 
     private void handleBackPressed() {
+        for (SingleNotePanel singleNotePanel : singleNotePanels) {
+            remove(singleNotePanel);
+        }
+        remove(backToUserPanelButton);
         mainFrame.hidePanel(mainFrame.getNotesScrollPane());
         mainFrame.showPanel(mainFrame.getUserPanel());
+    }
+
+    private void updateLayoutNotesPanel(UserNote usernote) {
+        for (SingleNotePanel singleNotePanel : singleNotePanels) {
+            remove(singleNotePanel);
+        }
+        remove(backToUserPanelButton);
+
+        listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
+        singleNotePanels = new ArrayList<>();
+        for (UserNote userNote : listOfUserNotes) {
+            singleNotePanels.add(new SingleNotePanel(userNote));
+        }
+        layoutComponents();
+        repaint();
+        revalidate();
     }
 
     private class SingleNotePanel extends JPanel implements ActionListener {
@@ -78,20 +96,31 @@ public class NotesPanel extends JPanel implements ActionListener{
             initializeComponents(userNote);
             layoutComponents();
             activateComponents();
-            setBorder(BorderFactory.createTitledBorder(userNote.getDateMade().toString()));
+            setUpBorder(userNote);
+        }
+
+        private void setUpBorder(UserNote userNote) {
+            String current_time = userNote.getDateMade().toString();
+            current_time = current_time.replaceAll("T", " ");
+            current_time = current_time.substring(0, current_time.length() - 4);
+            setBorder(BorderFactory.createTitledBorder(current_time));
         }
 
         private void initializeComponents(UserNote userNote) {
             this.userNote = userNote;
             noteTextArea = new JTextArea(userNote.getContent());
+            setupNoteTextArea();
+            noteScrollPane = new JScrollPane(noteTextArea);
+            noteScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            deleteButton = new JButton("Delete");
+        }
+
+        private void setupNoteTextArea() {
             noteTextArea.setLineWrap(true);
             noteTextArea.setWrapStyleWord(true);
             noteTextArea.setColumns(40);
             noteTextArea.setRows(7);
             noteTextArea.setEditable(false);
-            noteScrollPane = new JScrollPane(noteTextArea);
-            noteScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-            deleteButton = new JButton("Delete");
         }
 
         private void layoutComponents() {
@@ -108,8 +137,15 @@ public class NotesPanel extends JPanel implements ActionListener{
         public void actionPerformed(ActionEvent e) {
             boolean deletePressed = e.getSource() == deleteButton;
             if (deletePressed) {
-                System.out.println("Delete pressed");
+                handleDeletePressed();
             }
         }
+
+        private void handleDeletePressed() {
+            databaseServiceSingleton.deleteUserNoteFromDatabase(userNote);
+            JOptionPane.showMessageDialog(this, "Note deleted!");
+            updateLayoutNotesPanel(userNote);
+        }
+
     }
 }

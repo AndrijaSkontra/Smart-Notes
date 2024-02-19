@@ -79,4 +79,8 @@ public class DatabaseServiceSingleton {
         });
         return singleNotesFromUser;
     }
+
+    public void deleteUserNoteFromDatabase(UserNote userNote) {
+        sessionFactory.inTransaction(session -> session.remove(userNote));
+    }
 }
