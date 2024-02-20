@@ -16,7 +16,7 @@ public class DatabaseServiceSingletonTest {
 
     @BeforeEach
     public void setUp() {
-        UsersDatabaseConnection udc = new UsersDatabaseConnection();
+        UsersDatabaseConnection udc = UsersDatabaseConnection.getInstance();
         // databaseServiceSingleton = new DatabaseServiceSingleton(udc);
     }
 

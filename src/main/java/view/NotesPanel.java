@@ -103,7 +103,7 @@ public class NotesPanel extends JPanel implements ActionListener{
             String current_time = userNote.getDateMade().toString();
             current_time = current_time.replaceAll("T", " ");
             current_time = current_time.substring(0, current_time.length() - 4);
-            setBorder(BorderFactory.createTitledBorder(current_time));
+            setBorder(BorderFactory.createTitledBorder(current_time + " - " + userNote.getUser().getUsername()));
         }
 
         private void initializeComponents(UserNote userNote) {

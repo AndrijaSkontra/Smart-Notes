@@ -11,6 +11,7 @@ public class User {
     private Long id;
 
     @Setter
+    @Column(unique = true)
     private String username;
 
     @Setter
@@ -38,10 +39,21 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return username;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof User)) {
+            return false;
+        }
+
+        User user = (User) obj;
+
+        return user.getUsername().equals(this.getUsername());
     }
 }

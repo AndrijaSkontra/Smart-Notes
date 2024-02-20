@@ -4,6 +4,7 @@ import controller.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
 import model.User;
 import net.miginfocom.swing.MigLayout;
+import org.hibernate.exception.ConstraintViolationException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -84,7 +85,12 @@ public class RegisterPanel extends JPanel implements ActionListener{
         String password = String.valueOf(passwordField.getPassword());
         String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
         if (validationFormData.isPasswordDataCorrect(password, confirmPassword)) {
-            databaseServiceSingleton.addUserToDatabase(new User(userName, password));
+            try {
+                databaseServiceSingleton.addUserToDatabase(new User(userName, password));
+            } catch (ConstraintViolationException e) {
+                JOptionPane.showMessageDialog(this, "User with that username already exists", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             JOptionPane.showMessageDialog(this, "User registered successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
             handleBackPressed();
         }

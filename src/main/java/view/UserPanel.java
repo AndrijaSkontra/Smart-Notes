@@ -2,7 +2,6 @@ package view;
 
 import controller.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
-import lombok.Setter;
 import model.User;
 import model.UserNote;
 import net.miginfocom.swing.MigLayout;
@@ -12,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserPanel extends JPanel implements ActionListener {
 
@@ -21,6 +21,12 @@ public class UserPanel extends JPanel implements ActionListener {
     private JButton addNoteButton;
     private JButton signOutButton;
     private JButton seeNotesButton;
+    private JList<User> subscribedUsersList;
+    private JList<User> availableToSubscribeUsersList;
+    private JScrollPane subscribedUsersScrollPane;
+    private JScrollPane availableToSubscribeUsersScrollPane;
+    private JButton subscribeButton;
+    private JButton unsubscribeButton;
 
     private MainFrame mainFrame;
 
@@ -35,6 +41,13 @@ public class UserPanel extends JPanel implements ActionListener {
     }
 
     private void initializeComponents() {
+        mainFrame = MainFrame.getInstance();
+        databaseServiceSingleton = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
+        initiliazeLeftSideComponents();
+        initiliazeRightSideComponents();
+    }
+
+    private void initiliazeLeftSideComponents() {
         usernameLabel = new JLabel();
         usernameLabel.setFont(new Font("Serif", Font.BOLD, 20));
         notesTextArea = new JTextArea();
@@ -45,24 +58,60 @@ public class UserPanel extends JPanel implements ActionListener {
         addNoteButton = new JButton("Add note");
         signOutButton = new JButton("Sign out");
         seeNotesButton = new JButton("See notes");
+    }
 
-        mainFrame = MainFrame.getInstance();
-        databaseServiceSingleton = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
+    private void initiliazeRightSideComponents() {
+        subscribedUsersList = new JList<>();
+        availableToSubscribeUsersList = new JList<>();
+        subscribeButton = new JButton("Subscribe");
+        unsubscribeButton = new JButton("Unsubscribe");
+        availableToSubscribeUsersScrollPane = new JScrollPane(availableToSubscribeUsersList);
+        subscribedUsersScrollPane = new JScrollPane(subscribedUsersList);
+        availableToSubscribeUsersScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        subscribedUsersScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        // fillUpSubscribedUsersList();
+    }
+
+    private void updateAvailableUsersToSubList() {
+        List<User> availableUsersList = databaseServiceSingleton.getAvailableToSubscribeUsers(user);
+        DefaultListModel<User> availableToSubscribeUsersListModel = new DefaultListModel<>();
+        for (User user : availableUsersList) {
+            availableToSubscribeUsersListModel.addElement(user);
+        }
+        availableToSubscribeUsersList.setModel(availableToSubscribeUsersListModel);
+        availableToSubscribeUsersList.revalidate();
+        availableToSubscribeUsersList.repaint();
     }
 
     private void layoutComponents() {
-        setLayout(new MigLayout("", "[grow][grow]", "[grow][grow][grow][grow][grow]"));
-        add(usernameLabel, "cell 0 0, spanx 2, align center");
-        add(notesScrollPane, "grow, cell 0 1, spany 3, align center");
-        add(addNoteButton, "cell 0 4, align center");
-        add(seeNotesButton, "cell 1 3, align right");
-        add(signOutButton, "cell 1 4, align right");
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new MigLayout());
+        leftPanel.add(usernameLabel, "cell 0 0");
+        leftPanel.add(notesScrollPane, "cell 0 1, grow, h 65%");
+        leftPanel.add(new JSeparator(), "cell 0 2, growx, spanx, pushy, top");
+        leftPanel.add(addNoteButton, "cell 0 3, spanx 2, align center");
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new MigLayout());
+        rightPanel.add(subscribedUsersScrollPane, "cell 0 0, grow, h 30%, w 100%");
+        rightPanel.add(unsubscribeButton, "cell 0 1, top, center, pushy");
+        rightPanel.add(availableToSubscribeUsersScrollPane, "cell 0 2, h 30%, w 100%");
+        rightPanel.add(subscribeButton, "cell 0 3, align center");
+
+        setLayout(new MigLayout());
+        add(seeNotesButton, "cell 0 0, left");
+        add(signOutButton, "cell 1 0, right");
+        add(new JSeparator(), "cell 0 1, growx, spanx");
+        add(leftPanel, "cell 0 2, w 50%, h 100%");
+        add(rightPanel, "cell 1 2, w 50%, h 100%");
     }
 
     private void activateComponents() {
         addNoteButton.addActionListener(this);
         signOutButton.addActionListener(this);
         seeNotesButton.addActionListener(this);
+        subscribeButton.addActionListener(this);
+        unsubscribeButton.addActionListener(this);
     }
 
     @Override
@@ -70,6 +119,8 @@ public class UserPanel extends JPanel implements ActionListener {
         boolean addNotePressed = e.getSource() == addNoteButton;
         boolean signOutPressed = e.getSource() == signOutButton;
         boolean seeNotesPressed = e.getSource() == seeNotesButton;
+        boolean subscribePressed = e.getSource() == subscribeButton;
+        boolean unsubscribePressed = e.getSource() == unsubscribeButton;
         if (addNotePressed) {
             addNoteToDatabase();
             notesTextArea.setText("");
@@ -79,6 +130,20 @@ public class UserPanel extends JPanel implements ActionListener {
         }
         if (seeNotesPressed) {
             handleSeeNotesPressed();
+        }
+        if (subscribePressed) {
+            handleSubscribePressed();
+        }
+        if (unsubscribePressed) {
+            // handleUnsubscribePressed();
+        }
+    }
+
+    private void handleSubscribePressed() {
+        User selectedUser = availableToSubscribeUsersList.getSelectedValue();
+        if (selectedUser != null) {
+            databaseServiceSingleton.subscribeUser(user, selectedUser);
+            updateAvailableUsersToSubList();
         }
     }
 
@@ -103,8 +168,11 @@ public class UserPanel extends JPanel implements ActionListener {
         mainFrame.setSize(400, 300);
     }
 
+    // TODO this method does more then one thing!
     public void setUser(User user) {
         this.user = user;
         usernameLabel.setText("Welcome, " + user.getUsername());
+        // fillUpSubscribedUsersList();
+        updateAvailableUsersToSubList();
     }
 }
