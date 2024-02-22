@@ -69,18 +69,6 @@ public class UserPanel extends JPanel implements ActionListener {
         subscribedUsersScrollPane = new JScrollPane(subscribedUsersList);
         availableToSubscribeUsersScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         subscribedUsersScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        // fillUpSubscribedUsersList();
-    }
-
-    private void updateAvailableUsersToSubList() {
-        List<User> availableUsersList = databaseServiceSingleton.getAvailableToSubscribeUsers(user);
-        DefaultListModel<User> availableToSubscribeUsersListModel = new DefaultListModel<>();
-        for (User user : availableUsersList) {
-            availableToSubscribeUsersListModel.addElement(user);
-        }
-        availableToSubscribeUsersList.setModel(availableToSubscribeUsersListModel);
-        availableToSubscribeUsersList.revalidate();
-        availableToSubscribeUsersList.repaint();
     }
 
     private void layoutComponents() {
@@ -135,7 +123,16 @@ public class UserPanel extends JPanel implements ActionListener {
             handleSubscribePressed();
         }
         if (unsubscribePressed) {
-            // handleUnsubscribePressed();
+            handleUnsubscribePressed();
+        }
+    }
+
+    private void handleUnsubscribePressed() {
+        User selectedUser = subscribedUsersList.getSelectedValue();
+        if (selectedUser != null) {
+            databaseServiceSingleton.unsubscribeUser(user, selectedUser);
+            updateAvailableUsersToSubJList();
+            updateSubscribedToJList();
         }
     }
 
@@ -143,7 +140,8 @@ public class UserPanel extends JPanel implements ActionListener {
         User selectedUser = availableToSubscribeUsersList.getSelectedValue();
         if (selectedUser != null) {
             databaseServiceSingleton.subscribeUser(user, selectedUser);
-            updateAvailableUsersToSubList();
+            updateAvailableUsersToSubJList();
+            updateSubscribedToJList();
         }
     }
 
@@ -169,10 +167,33 @@ public class UserPanel extends JPanel implements ActionListener {
     }
 
     // TODO this method does more then one thing!
+
     public void setUser(User user) {
         this.user = user;
         usernameLabel.setText("Welcome, " + user.getUsername());
         // fillUpSubscribedUsersList();
-        updateAvailableUsersToSubList();
+        updateSubscribedToJList();
+        updateAvailableUsersToSubJList();
+    }
+    private void updateAvailableUsersToSubJList() {
+        List<User> availableUsersList = databaseServiceSingleton.getAvailableToSubscribeUsers(user);
+        DefaultListModel<User> availableToSubscribeUsersListModel = new DefaultListModel<>();
+        for (User user : availableUsersList) {
+            availableToSubscribeUsersListModel.addElement(user);
+        }
+        availableToSubscribeUsersList.setModel(availableToSubscribeUsersListModel);
+        availableToSubscribeUsersList.revalidate();
+        availableToSubscribeUsersList.repaint();
+    }
+
+    private void updateSubscribedToJList() {
+        List<User> subscribedToUsers = databaseServiceSingleton.getSubscribedUsers(user);
+        DefaultListModel<User> subscribedToUsersListModel = new DefaultListModel<>();
+        for (User user : subscribedToUsers) {
+            subscribedToUsersListModel.addElement(user);
+        }
+        subscribedUsersList.setModel(subscribedToUsersListModel);
+        subscribedUsersList.revalidate();
+        subscribedUsersList.repaint();
     }
 }

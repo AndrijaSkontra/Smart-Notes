@@ -20,6 +20,7 @@ public class NotesPanel extends JPanel implements ActionListener{
     private MainFrame mainFrame;
 
     private ArrayList<UserNote> listOfUserNotes;
+    private ArrayList<UserNote> listOfSubscribedUserNotes;
 
     public void setUser(User user) {
         this.user = user;
@@ -31,11 +32,13 @@ public class NotesPanel extends JPanel implements ActionListener{
     }
 
     private void initializeComponents() {
-        listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
         singleNotePanels = new ArrayList<>();
+        listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
         for (UserNote userNote : listOfUserNotes) {
-            singleNotePanels.add(new SingleNotePanel(userNote));
+            singleNotePanels.add(new SingleNotePanel(userNote, true));
         }
+        listOfSubscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
+        listOfSubscribedUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, false)));
         backToUserPanelButton = new JButton("Back");
     }
 
@@ -77,8 +80,11 @@ public class NotesPanel extends JPanel implements ActionListener{
         listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
         singleNotePanels = new ArrayList<>();
         for (UserNote userNote : listOfUserNotes) {
-            singleNotePanels.add(new SingleNotePanel(userNote));
+            singleNotePanels.add(new SingleNotePanel(userNote, true));
         }
+        listOfSubscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
+        listOfSubscribedUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, false)));
+
         layoutComponents();
         repaint();
         revalidate();
@@ -90,9 +96,10 @@ public class NotesPanel extends JPanel implements ActionListener{
         private JTextArea noteTextArea;
         private JScrollPane noteScrollPane;
         private JButton deleteButton;
+        private final boolean isDeleteButtonShown;
 
-
-        public SingleNotePanel(UserNote userNote) {
+        public SingleNotePanel(UserNote userNote, boolean isDeleteButtonShown) {
+            this.isDeleteButtonShown = isDeleteButtonShown;
             initializeComponents(userNote);
             layoutComponents();
             activateComponents();
@@ -126,7 +133,9 @@ public class NotesPanel extends JPanel implements ActionListener{
         private void layoutComponents() {
             setLayout(new MigLayout("", "[grow][grow]", "[grow][grow]"));
             add(noteScrollPane, "cell 0 0, grow, spanx 2, align center");
-            add(deleteButton, "cell 0 1, align left");
+            if (isDeleteButtonShown) {
+                add(deleteButton, "cell 0 1, align left");
+            }
         }
 
         private void activateComponents() {

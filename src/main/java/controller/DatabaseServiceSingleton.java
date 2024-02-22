@@ -20,6 +20,7 @@ public class DatabaseServiceSingleton {
     private static volatile DatabaseServiceSingleton instance;
     private DatabaseConnection dc;
     private SessionFactory sessionFactory;
+    private UserService userService;
 
     private DatabaseServiceSingleton(DatabaseConnection dc) {
         this.dc = dc;
@@ -78,7 +79,23 @@ public class DatabaseServiceSingleton {
     }
 
     public List<User> getSubscribedUsers(User user) {
-        return null;
+
+        ArrayList<UserSubscription> userSubscriptionList = new ArrayList<>();
+        sessionFactory.inTransaction(session -> {
+            String hql = "FROM UserSubscription U";
+            Query query = session.createQuery(hql);
+            userSubscriptionList.addAll(query.list());
+        });
+
+        ArrayList<User> subscribedToList = new ArrayList<>();
+
+        for (UserSubscription userSubscription : userSubscriptionList) {
+            if (userSubscription.getSubscriber().equals(user)) {
+                subscribedToList.add(userSubscription.getSubscribedTo());
+            }
+        }
+
+        return subscribedToList;
     }
 
     public ArrayList<UserNote> getAListOfUserNotes(User user) {
@@ -124,5 +141,39 @@ public class DatabaseServiceSingleton {
         userSubscription.setSubscriber(user);
         userSubscription.setSubscribedTo(subscribedToUser);
         sessionFactory.inTransaction(session -> session.persist(userSubscription));
+    }
+
+    public void unsubscribeUser(User user, User selectedUser) {
+        Long userId = user.getId();
+        Long selectedUserId = selectedUser.getId();
+
+        sessionFactory.inTransaction(session -> {
+            UserSubscription userSubscription = null;
+            String hql = "FROM UserSubscription U WHERE U.subscriber.id = :user_id AND U.subscribedTo.id = :selected_user_id";
+            Query query = session.createQuery(hql);
+            query.setParameter("user_id", userId);
+            query.setParameter("selected_user_id", selectedUserId);
+            userSubscription = (UserSubscription) query.uniqueResult();
+            session.remove(userSubscription);
+        });
+    }
+
+    public ArrayList<UserNote> getAListOfSubscribedUserNotes(User user) {
+        ArrayList<UserNote> subscribedUsersNotes = new ArrayList<>();
+
+        sessionFactory.inTransaction(session -> {
+            String hql = "FROM UserSubscription U WHERE U.subscriber.id = :user_id";
+            Query query = session.createQuery(hql);
+            query.setParameter("user_id", user.getId());
+            List<UserSubscription> userSubscriptions = query.list();
+            for (UserSubscription us : userSubscriptions) {
+                String hql2 = "FROM UserNote U WHERE U.user.id = :subscribed_user_id";
+                Query query2 = session.createQuery(hql2);
+                query2.setParameter("subscribed_user_id", us.getSubscribedTo().getId());
+                subscribedUsersNotes.addAll(query2.list());
+            }
+        });
+
+        return subscribedUsersNotes;
     }
 }
