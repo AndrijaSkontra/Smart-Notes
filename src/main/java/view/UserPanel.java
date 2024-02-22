@@ -1,6 +1,6 @@
 package view;
 
-import controller.DatabaseServiceSingleton;
+import controller.services.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
 import model.User;
 import model.UserNote;
@@ -55,9 +55,9 @@ public class UserPanel extends JPanel implements ActionListener {
         notesTextArea.setWrapStyleWord(true);
         notesScrollPane = new JScrollPane(notesTextArea);
         notesScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        addNoteButton = new JButton("Add note");
+        addNoteButton = new JButton("Add blog post");
         signOutButton = new JButton("Sign out");
-        seeNotesButton = new JButton("See notes");
+        seeNotesButton = new JButton("See all blogs");
     }
 
     private void initiliazeRightSideComponents() {
@@ -155,7 +155,7 @@ public class UserPanel extends JPanel implements ActionListener {
 
     private void handleSeeNotesPressed() {
         NotesPanel notesPanel = mainFrame.getNotesPanel();
-        notesPanel.setUser(user);
+        notesPanel.initializeNotesPanel(user);
         mainFrame.hidePanel(mainFrame.getUserPanel());
         mainFrame.showPanel(mainFrame.getNotesScrollPane());
     }
@@ -166,15 +166,13 @@ public class UserPanel extends JPanel implements ActionListener {
         mainFrame.setSize(400, 300);
     }
 
-    // TODO this method does more then one thing!
-
-    public void setUser(User user) {
+    public void initializeUserInUserPanel(User user) {
         this.user = user;
         usernameLabel.setText("Welcome, " + user.getUsername());
-        // fillUpSubscribedUsersList();
         updateSubscribedToJList();
         updateAvailableUsersToSubJList();
     }
+
     private void updateAvailableUsersToSubJList() {
         List<User> availableUsersList = databaseServiceSingleton.getAvailableToSubscribeUsers(user);
         DefaultListModel<User> availableToSubscribeUsersListModel = new DefaultListModel<>();

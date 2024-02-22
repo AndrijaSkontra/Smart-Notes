@@ -1,5 +1,6 @@
 package controller;
 
+import controller.services.DatabaseServiceSingleton;
 import model.User;
 import model.UserNote;
 import org.junit.jupiter.api.BeforeEach;

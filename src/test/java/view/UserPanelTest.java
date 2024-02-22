@@ -1,7 +1,6 @@
 package view;
 
 import model.User;
-import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 
@@ -28,7 +27,7 @@ public class UserPanelTest {
                 mainFrame.setSize(600, 500);
                 mainFrame.setLocationRelativeTo(null);
                 UserPanel userPanel = new UserPanel();
-                userPanel.setUser(createUser());
+                userPanel.initializeUserInUserPanel(createUser());
                 mainFrame.showPanel(userPanel);
             }
         });

@@ -17,7 +17,7 @@ public class MainFrame extends JFrame {
     private JScrollPane notesScrollPane;
 
     private MainFrame() {
-        setTitle("Smart notes");
+        setTitle("Blog App");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

@@ -1,4 +1,4 @@
-package controller;
+package controller.services;
 
 import model.User;
 import org.hibernate.SessionFactory;
@@ -35,9 +35,5 @@ public class UserService {
             userRef.set(user);
         });
         return userRef.get();
-    }
-
-    public boolean isUserDataValid(User user, String password) {
-        return user.getPassword().equals(password);
     }
 }

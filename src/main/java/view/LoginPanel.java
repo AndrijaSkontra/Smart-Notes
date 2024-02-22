@@ -1,6 +1,6 @@
 package view;
 
-import controller.DatabaseServiceSingleton;
+import controller.services.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
 import lombok.Getter;
 import model.User;
@@ -81,11 +81,9 @@ public class LoginPanel extends JPanel implements ActionListener{
             JOptionPane.showMessageDialog(this, "No user with this username in database", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        boolean isPasswordCorrect = databaseService.isUserDataValid(user, String.valueOf(passwordField.getPassword()));
+        boolean isPasswordCorrect = ValidateLogin.isPasswordDataCorrect(user.getPassword(), String.valueOf(passwordField.getPassword()));
         if (isPasswordCorrect) {
             handleLoginSuccesfull(user);
-            passwordField.setText("");
-            usernameField.setText("");
         } else {
             JOptionPane.showMessageDialog(this, "Incorrect credientials", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -96,11 +94,20 @@ public class LoginPanel extends JPanel implements ActionListener{
         mainFrame.showPanel(mainFrame.getUserPanel());
         mainFrame.setSize(600, 500);
         mainFrame.setLocationRelativeTo(null);
-        mainFrame.getUserPanel().setUser(user);
+        mainFrame.getUserPanel().initializeUserInUserPanel(user);
+        passwordField.setText("");
+        usernameField.setText("");
     }
 
     private void handleBackPressed() {
         mainFrame.hidePanel(this);
         mainFrame.showPanel(mainFrame.getAuthPanel());
     }
+
+    private class ValidateLogin {
+        private static boolean isPasswordDataCorrect(String password, String confirmPassword) {
+            return password.equals(confirmPassword);
+        }
+    }
+
 }

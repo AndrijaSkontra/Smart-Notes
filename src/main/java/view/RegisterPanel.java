@@ -1,6 +1,6 @@
 package view;
 
-import controller.DatabaseServiceSingleton;
+import controller.services.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
 import model.User;
 import net.miginfocom.swing.MigLayout;
@@ -102,18 +102,6 @@ public class RegisterPanel extends JPanel implements ActionListener{
         passwordField.setText("");
         confirmPasswordField.setText("");
     }
-
-//    private boolean isPasswordDataCorrect(String password, String confirmPassword) {
-//        if (!password.equals(confirmPassword)) {
-//            JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        }
-//        if (password.length() < 4) {
-//            JOptionPane.showMessageDialog(this, "Password must be at least 4 characters long", "Error", JOptionPane.ERROR_MESSAGE);
-//            return false;
-//        }
-//        return true;
-//    }
 
     private class ValidationFormData {
         private boolean isPasswordDataCorrect(String password, String confirmPassword) {

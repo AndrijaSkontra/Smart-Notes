@@ -1,6 +1,6 @@
 package view;
 
-import controller.DatabaseServiceSingleton;
+import controller.services.DatabaseServiceSingleton;
 import controller.UsersDatabaseConnection;
 import model.User;
 import model.UserNote;
@@ -22,7 +22,7 @@ public class NotesPanel extends JPanel implements ActionListener{
     private ArrayList<UserNote> listOfUserNotes;
     private ArrayList<UserNote> listOfSubscribedUserNotes;
 
-    public void setUser(User user) {
+    public void initializeNotesPanel(User user) {
         this.user = user;
         mainFrame = MainFrame.getInstance();
         databaseServiceSingleton = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
@@ -34,9 +34,7 @@ public class NotesPanel extends JPanel implements ActionListener{
     private void initializeComponents() {
         singleNotePanels = new ArrayList<>();
         listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
-        for (UserNote userNote : listOfUserNotes) {
-            singleNotePanels.add(new SingleNotePanel(userNote, true));
-        }
+        listOfUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, true)));
         listOfSubscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
         listOfSubscribedUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, false)));
         backToUserPanelButton = new JButton("Back");
@@ -71,20 +69,14 @@ public class NotesPanel extends JPanel implements ActionListener{
         mainFrame.showPanel(mainFrame.getUserPanel());
     }
 
-    private void updateLayoutNotesPanel(UserNote usernote) {
-        for (SingleNotePanel singleNotePanel : singleNotePanels) {
-            remove(singleNotePanel);
-        }
+    private void updateLayoutNotesPanel() {
+        singleNotePanels.clear();
         remove(backToUserPanelButton);
 
         listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
-        singleNotePanels = new ArrayList<>();
-        for (UserNote userNote : listOfUserNotes) {
-            singleNotePanels.add(new SingleNotePanel(userNote, true));
-        }
+        listOfUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, true)));
         listOfSubscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
         listOfSubscribedUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, false)));
-
         layoutComponents();
         repaint();
         revalidate();
@@ -153,7 +145,7 @@ public class NotesPanel extends JPanel implements ActionListener{
         private void handleDeletePressed() {
             databaseServiceSingleton.deleteUserNoteFromDatabase(userNote);
             JOptionPane.showMessageDialog(this, "Note deleted!");
-            updateLayoutNotesPanel(userNote);
+            updateLayoutNotesPanel();
         }
 
     }
