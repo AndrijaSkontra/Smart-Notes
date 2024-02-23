@@ -61,17 +61,16 @@ public class NotesPanel extends JPanel implements ActionListener{
     }
 
     private void handleBackPressed() {
-        for (SingleNotePanel singleNotePanel : singleNotePanels) {
-            remove(singleNotePanel);
-        }
+        singleNotePanels.forEach(this::remove);
         remove(backToUserPanelButton);
         mainFrame.hidePanel(mainFrame.getNotesScrollPane());
         mainFrame.showPanel(mainFrame.getUserPanel());
     }
 
     private void updateLayoutNotesPanel() {
-        singleNotePanels.clear();
+        singleNotePanels.forEach(this::remove);
         remove(backToUserPanelButton);
+        singleNotePanels.clear();
 
         listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
         listOfUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, true)));
