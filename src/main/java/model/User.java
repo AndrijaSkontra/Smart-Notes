@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
 @Entity
@@ -17,12 +18,18 @@ public class User {
     @Setter
     private String password;
 
+    @Setter
+    @Getter
+    @Column(name = "has_read_all_notes")
+    private boolean readAllNotes;
+
     public User() {
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.readAllNotes = true;
     }
 
     public Long getId() {

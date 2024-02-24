@@ -39,7 +39,7 @@ public class UserSubscriptionService {
         });
     }
 
-    public List<User> getSubscribedUsers(User user) {
+    public List<User> getAllUserSubscriptions(User user) {
         ArrayList<UserSubscription> userSubscriptionList = new ArrayList<>();
         sessionFactory.inTransaction(session -> {
             String hql = "FROM UserSubscription U";
@@ -99,5 +99,24 @@ public class UserSubscriptionService {
         });
 
         return subscribedUsersNotes;
+    }
+
+    public List<User> getAllSubscribedToUser(User user) {
+        ArrayList<UserSubscription> userSubscriptionList = new ArrayList<>();
+        sessionFactory.inTransaction(session -> {
+            String hql = "FROM UserSubscription U WHERE U.subscribedTo.id = :user_id";
+            Query query = session.createQuery(hql);
+            query.setParameter("user_id", user.getId());
+            userSubscriptionList.addAll(query.list());
+        });
+
+        ArrayList<User> subscribedToList = new ArrayList<>();
+        for (UserSubscription userSubscription : userSubscriptionList) {
+            subscribedToList.add(userSubscription.getSubscriber());
+        }
+        for (User user1 : subscribedToList) {
+            System.out.println(user1.getUsername() + " --- yes");
+        }
+        return subscribedToList;
     }
 }

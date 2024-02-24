@@ -21,6 +21,7 @@ public class UserPanel extends JPanel implements ActionListener {
     private JButton addNoteButton;
     private JButton signOutButton;
     private JButton seeNotesButton;
+    private JButton notificationsButton;
     private JList<User> subscribedUsersList;
     private JList<User> availableToSubscribeUsersList;
     private JScrollPane subscribedUsersScrollPane;
@@ -45,6 +46,7 @@ public class UserPanel extends JPanel implements ActionListener {
         databaseServiceSingleton = DatabaseServiceSingleton.getInstance(UsersDatabaseConnection.getInstance());
         initiliazeLeftSideComponents();
         initiliazeRightSideComponents();
+        initiliateUpperButtons();
     }
 
     private void initiliazeLeftSideComponents() {
@@ -56,6 +58,10 @@ public class UserPanel extends JPanel implements ActionListener {
         notesScrollPane = new JScrollPane(notesTextArea);
         notesScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         addNoteButton = new JButton("Add blog post");
+    }
+
+    private void initiliateUpperButtons() {
+        notificationsButton = new JButton("Notifications");
         signOutButton = new JButton("Sign out");
         seeNotesButton = new JButton("See all blogs");
     }
@@ -87,8 +93,10 @@ public class UserPanel extends JPanel implements ActionListener {
         rightPanel.add(subscribeButton, "cell 0 3, align center");
 
         setLayout(new MigLayout());
-        add(seeNotesButton, "cell 0 0, left");
-        add(signOutButton, "cell 1 0, right");
+        var notifButtonWidth = notificationsButton.getPreferredSize().getWidth();
+        add(seeNotesButton, "cell 0 0, spanx 2, center, w " + notifButtonWidth + "px");
+        add(notificationsButton, "cell 0 0, gap left 15%, gap right 15%, w " + notifButtonWidth + "px");
+        add(signOutButton, "cell 0 0, w 100, w " + notifButtonWidth + "px");
         add(new JSeparator(), "cell 0 1, growx, spanx");
         add(leftPanel, "cell 0 2, w 50%, h 100%");
         add(rightPanel, "cell 1 2, w 50%, h 100%");
@@ -100,6 +108,7 @@ public class UserPanel extends JPanel implements ActionListener {
         seeNotesButton.addActionListener(this);
         subscribeButton.addActionListener(this);
         unsubscribeButton.addActionListener(this);
+        notificationsButton.addActionListener(this);
     }
 
     @Override
@@ -109,9 +118,9 @@ public class UserPanel extends JPanel implements ActionListener {
         boolean seeNotesPressed = e.getSource() == seeNotesButton;
         boolean subscribePressed = e.getSource() == subscribeButton;
         boolean unsubscribePressed = e.getSource() == unsubscribeButton;
+        boolean notificationsPressed = e.getSource() == notificationsButton;
         if (addNotePressed) {
-            addNoteToDatabase();
-            notesTextArea.setText("");
+            handleAddNotePressed();
         }
         if (signOutPressed) {
             handleSignOutPressed();
@@ -125,6 +134,31 @@ public class UserPanel extends JPanel implements ActionListener {
         if (unsubscribePressed) {
             handleUnsubscribePressed();
         }
+        if (notificationsPressed) {
+            handleNotificationsPressed();
+        }
+    }
+
+    private void handleAddNotePressed() {
+        addNoteToDatabase();
+        notesTextArea.setText("");
+        notifyAllSubscribers();
+    }
+
+    private void notifyAllSubscribers() {
+        List<User> subscribedUsers = databaseServiceSingleton.getAllSubscribedToUser(user);
+        System.out.println(subscribedUsers.size() + " subscribed users");
+        for (User user : subscribedUsers) {
+            user.setReadAllNotes(false);
+            databaseServiceSingleton.updateUser(user);
+        }
+    }
+
+    private void handleNotificationsPressed() {
+        var notificationFrame = new NotificationsFrame(user);
+        user.setReadAllNotes(true);
+        databaseServiceSingleton.updateUser(user);
+        updateNotificationButton(user);
     }
 
     private void handleUnsubscribePressed() {
@@ -171,6 +205,19 @@ public class UserPanel extends JPanel implements ActionListener {
         usernameLabel.setText("Welcome, " + user.getUsername());
         updateSubscribedToJList();
         updateAvailableUsersToSubJList();
+        updateNotificationButton(user);
+    }
+
+    private void updateNotificationButton(User user) {
+        if (!user.isReadAllNotes()) {
+            notificationsButton.setBackground(Color.red);
+            notificationsButton.setFont(new Font("Arial", Font.BOLD, 12));
+        } else {
+            notificationsButton.setBackground(null);
+            notificationsButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        }
+        notificationsButton.revalidate();
+        notificationsButton.repaint();
     }
 
     private void updateAvailableUsersToSubJList() {
@@ -185,7 +232,7 @@ public class UserPanel extends JPanel implements ActionListener {
     }
 
     private void updateSubscribedToJList() {
-        List<User> subscribedToUsers = databaseServiceSingleton.getSubscribedUsers(user);
+        List<User> subscribedToUsers = databaseServiceSingleton.getAllUserSubscriptions(user);
         DefaultListModel<User> subscribedToUsersListModel = new DefaultListModel<>();
         for (User user : subscribedToUsers) {
             subscribedToUsersListModel.addElement(user);

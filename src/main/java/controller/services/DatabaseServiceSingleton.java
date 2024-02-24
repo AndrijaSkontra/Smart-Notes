@@ -61,8 +61,8 @@ public class DatabaseServiceSingleton {
         userNoteService.deleteUserNoteFromDatabase(userNote);
     }
 
-    public List<User> getSubscribedUsers(User user) {
-        return userSubscriptionService.getSubscribedUsers(user);
+    public List<User> getAllUserSubscriptions(User user) {
+        return userSubscriptionService.getAllUserSubscriptions(user);
     }
 
     public ArrayList<UserNote> getAListOfUserNotes(User user) {
@@ -83,5 +83,13 @@ public class DatabaseServiceSingleton {
 
     public ArrayList<UserNote> getAListOfSubscribedUserNotes(User user) {
         return userSubscriptionService.getAListOfSubscribedUserNotes(user);
+    }
+
+    public void updateUser(User user) {
+        userService.updateUser(user);
+    }
+
+    public List<User> getAllSubscribedToUser(User user) {
+        return userSubscriptionService.getAllSubscribedToUser(user);
     }
 }

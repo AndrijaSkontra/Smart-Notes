@@ -36,4 +36,8 @@ public class UserService {
         });
         return userRef.get();
     }
+
+    public void updateUser(User user) {
+        sessionFactory.inTransaction(session -> session.update(user));
+    }
 }
