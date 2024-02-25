@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -23,6 +28,16 @@ public class User {
     @Column(name = "has_read_all_notes")
     private boolean readAllNotes;
 
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<UserNote> userNoteSet;
+
+    @Getter
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "notification_user_notes")
+    private Set<UserNote> userNotificationNotes = new HashSet<>();
+
     public User() {
     }
 
@@ -30,6 +45,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.readAllNotes = true;
+        userNoteSet = new HashSet<>();
     }
 
     public Long getId() {

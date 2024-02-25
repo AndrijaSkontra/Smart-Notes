@@ -5,6 +5,7 @@ import controller.UsersDatabaseConnection;
 import model.User;
 import model.UserNote;
 import net.miginfocom.swing.MigLayout;
+import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -140,16 +141,22 @@ public class UserPanel extends JPanel implements ActionListener {
     }
 
     private void handleAddNotePressed() {
-        addNoteToDatabase();
+        UserNote userNote = new UserNote();
+        addNoteToDatabase(userNote);
         notesTextArea.setText("");
-        notifyAllSubscribers();
+        notifyAllSubscribers(userNote);
     }
 
-    private void notifyAllSubscribers() {
+    private void notifyAllSubscribers(UserNote userNote) {
         List<User> subscribedUsers = databaseServiceSingleton.getAllSubscribedToUser(user);
-        System.out.println(subscribedUsers.size() + " subscribed users");
         for (User user : subscribedUsers) {
             user.setReadAllNotes(false);
+            databaseServiceSingleton.updateUser(user);
+        }
+        for (User user : databaseServiceSingleton.getAllSubscribedToUser(user)) {
+            System.out.println(user.getUsername());
+            user.getUserNotificationNotes().add(userNote);
+            userNote.getUserSet().add(user);
             databaseServiceSingleton.updateUser(user);
         }
     }
@@ -179,8 +186,7 @@ public class UserPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void addNoteToDatabase() {
-        UserNote userNote = new UserNote();
+    private void addNoteToDatabase(UserNote userNote) {
         userNote.setContent(notesTextArea.getText());
         userNote.setDateMade(LocalDateTime.now());
         userNote.setUser(user);

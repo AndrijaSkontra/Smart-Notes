@@ -92,4 +92,8 @@ public class DatabaseServiceSingleton {
     public List<User> getAllSubscribedToUser(User user) {
         return userSubscriptionService.getAllSubscribedToUser(user);
     }
+
+    public ArrayList<UserNote> getAListOfUserNotificationNotes(User user) {
+        return userNoteService.getAListOfUserNotificationNotes(user);
+    }
 }

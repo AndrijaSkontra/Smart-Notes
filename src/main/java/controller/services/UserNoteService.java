@@ -41,4 +41,15 @@ public class UserNoteService {
         });
         return singleNotesFromUser;
     }
+
+    public ArrayList<UserNote> getAListOfUserNotificationNotes(User user) {
+        ArrayList<UserNote> userNotesToReturn = new ArrayList<>();
+        sessionFactory.inTransaction(session -> {
+            String hql = "FROM UserNote UN WHERE UN IN elements(:user_notification_notes)";
+            Query query = session.createQuery(hql);
+            query.setParameter("user_notification_notes", user.getUserNotificationNotes());
+            userNotesToReturn.addAll(query.list());
+        });
+        return null;
+    }
 }

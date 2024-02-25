@@ -9,6 +9,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class NotificationsFrame extends JFrame {
 
@@ -35,7 +36,9 @@ public class NotificationsFrame extends JFrame {
     }
 
     private ArrayList<SingleNotificationPanel> fillNotificationPanelsList() {
-        var subscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
+        //var subscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
+        // ArrayList<UserNote> subscribedUserNotes = databaseServiceSingleton.getAListOfUserNotificationNotes(user);
+        Set<UserNote> subscribedUserNotes = user.getUserNotificationNotes();
         var notificationPanels = new ArrayList<SingleNotificationPanel>();
         subscribedUserNotes.forEach(userNote -> notificationPanels.add(new SingleNotificationPanel(userNote)));
         return notificationPanels;

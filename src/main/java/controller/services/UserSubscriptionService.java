@@ -114,9 +114,6 @@ public class UserSubscriptionService {
         for (UserSubscription userSubscription : userSubscriptionList) {
             subscribedToList.add(userSubscription.getSubscriber());
         }
-        for (User user1 : subscribedToList) {
-            System.out.println(user1.getUsername() + " --- yes");
-        }
         return subscribedToList;
     }
 }

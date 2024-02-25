@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users_notes")
@@ -31,6 +33,11 @@ public class UserNote {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Getter
+    @Setter
+    @ManyToMany(mappedBy = "userNotificationNotes", fetch = FetchType.EAGER)
+    private Set<User> userSet = new HashSet<>();
 
     public UserNote() {
     }
