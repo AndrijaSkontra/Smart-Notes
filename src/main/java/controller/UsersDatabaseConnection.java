@@ -11,6 +11,11 @@ import static org.hibernate.cfg.JdbcSettings.*;
 import static org.hibernate.cfg.JdbcSettings.HIGHLIGHT_SQL;
 import static org.hibernate.cfg.SchemaToolingSettings.HBM2DDL_AUTO;
 
+/**
+ * Class responsible for creating a session factory
+ * that connects to specific local MySQL database.
+ * This class is a singleton.
+ */
 public class UsersDatabaseConnection implements DatabaseConnection{
 
     public static volatile UsersDatabaseConnection instance;

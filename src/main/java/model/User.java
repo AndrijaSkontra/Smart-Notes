@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Class representing a user in the database.
+ */
 @Entity
 @Table(name = "users")
 public class User {

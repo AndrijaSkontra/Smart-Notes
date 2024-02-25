@@ -7,6 +7,10 @@ import org.hibernate.query.Query;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Class responsible for querying and sending data to the database
+ * related to User objects.
+ */
 public class UserService {
 
     private SessionFactory sessionFactory;

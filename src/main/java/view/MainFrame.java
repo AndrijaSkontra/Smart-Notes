@@ -5,6 +5,11 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
+/**
+ * Class responsible for the main frame of the application.
+ * Contains all the panel classes.
+ * Uses MiGLayout for managing what panel is displayed.
+ */
 @Getter
 public class MainFrame extends JFrame {
 

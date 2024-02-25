@@ -10,6 +10,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Class responsible for log in the user in the application.
+ */
 public class LoginPanel extends JPanel implements ActionListener{
 
     private JLabel usernameLabel;
@@ -104,6 +107,9 @@ public class LoginPanel extends JPanel implements ActionListener{
         mainFrame.showPanel(mainFrame.getAuthPanel());
     }
 
+    /**
+     * Validate login data from user.
+     */
     private class ValidateLogin {
         private static boolean isPasswordDataCorrect(String password, String confirmPassword) {
             return password.equals(confirmPassword);

@@ -8,6 +8,10 @@ import org.hibernate.query.Query;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Class responsible for querying and sending data to the database
+ * related to UserNote objects.
+ */
 public class UserNoteService {
 
     private SessionFactory sessionFactory;
@@ -42,6 +46,11 @@ public class UserNoteService {
         return singleNotesFromUser;
     }
 
+    /**
+     * Returns a list of UserNote objects that are in the user's notification list.
+     * @param user - the user to get the notification notes from.
+     * @return - a list of UserNote objects.
+     */
     public ArrayList<UserNote> getAListOfUserNotificationNotes(User user) {
         ArrayList<UserNote> userNotesToReturn = new ArrayList<>();
         sessionFactory.inTransaction(session -> {

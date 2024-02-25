@@ -36,8 +36,6 @@ public class NotificationsFrame extends JFrame {
     }
 
     private ArrayList<SingleNotificationPanel> fillNotificationPanelsList() {
-        //var subscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
-        // ArrayList<UserNote> subscribedUserNotes = databaseServiceSingleton.getAListOfUserNotificationNotes(user);
         Set<UserNote> subscribedUserNotes = user.getUserNotificationNotes();
         var notificationPanels = new ArrayList<SingleNotificationPanel>();
         subscribedUserNotes.forEach(userNote -> notificationPanels.add(new SingleNotificationPanel(userNote)));

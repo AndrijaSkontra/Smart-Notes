@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Class representing a UserSubscription in the database.
+ */
 @Entity
 @Table(name = "user_subscriptions")
 public class UserSubscription {

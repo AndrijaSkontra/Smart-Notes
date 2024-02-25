@@ -9,6 +9,10 @@ import org.hibernate.query.Query;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class responsible for querying and sending data to the database
+ * related to UserSubscription objects.
+ */
 public class UserSubscriptionService {
 
     private SessionFactory sessionFactory;

@@ -9,6 +9,11 @@ import org.hibernate.exception.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class responsible for managing services that query data,
+ * and sending the connection to those services.
+ * This class is a singleton. Invoke getInstance() to get the instance.
+ */
 public class DatabaseServiceSingleton {
 
     private static volatile DatabaseServiceSingleton instance;

@@ -10,6 +10,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Panel responsible for registering a new user.
+ */
 public class RegisterPanel extends JPanel implements ActionListener{
 
     private JLabel usernameLabel;

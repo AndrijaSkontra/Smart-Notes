@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Panel that displays the notes of the user.
+ */
 public class NotesPanel extends JPanel implements ActionListener{
 
     private ArrayList<SingleNotePanel> singleNotePanels;
@@ -68,19 +71,25 @@ public class NotesPanel extends JPanel implements ActionListener{
     }
 
     private void updateLayoutNotesPanel() {
-        singleNotePanels.forEach(this::remove);
-        remove(backToUserPanelButton);
-        singleNotePanels.clear();
-
-        listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
-        listOfUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, true)));
-        listOfSubscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
-        listOfSubscribedUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, false)));
+        initiliazeListsNeededForDisplay();
         layoutComponents();
         repaint();
         revalidate();
     }
 
+    private void initiliazeListsNeededForDisplay() {
+        singleNotePanels.forEach(this::remove);
+        remove(backToUserPanelButton);
+        singleNotePanels.clear();
+        listOfUserNotes = databaseServiceSingleton.getAListOfUserNotes(user);
+        listOfUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, true)));
+        listOfSubscribedUserNotes = databaseServiceSingleton.getAListOfSubscribedUserNotes(user);
+        listOfSubscribedUserNotes.forEach(userNote -> singleNotePanels.add(new SingleNotePanel(userNote, false)));
+    }
+
+    /**
+     * This class takes care of the single note in this panel.
+     */
     private class SingleNotePanel extends JPanel implements ActionListener {
 
         private UserNote userNote;

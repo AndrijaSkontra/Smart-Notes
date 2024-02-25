@@ -5,7 +5,6 @@ import controller.UsersDatabaseConnection;
 import model.User;
 import model.UserNote;
 import net.miginfocom.swing.MigLayout;
-import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +13,9 @@ import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Panel responsible for the user's main view.
+ */
 public class UserPanel extends JPanel implements ActionListener {
 
     private JLabel usernameLabel;
@@ -172,7 +174,7 @@ public class UserPanel extends JPanel implements ActionListener {
         User selectedUser = subscribedUsersList.getSelectedValue();
         if (selectedUser != null) {
             databaseServiceSingleton.unsubscribeUser(user, selectedUser);
-            updateAvailableUsersToSubJList();
+            updateAvailableUsersToSubscribersJList();
             updateSubscribedToJList();
         }
     }
@@ -181,7 +183,7 @@ public class UserPanel extends JPanel implements ActionListener {
         User selectedUser = availableToSubscribeUsersList.getSelectedValue();
         if (selectedUser != null) {
             databaseServiceSingleton.subscribeUser(user, selectedUser);
-            updateAvailableUsersToSubJList();
+            updateAvailableUsersToSubscribersJList();
             updateSubscribedToJList();
         }
     }
@@ -210,7 +212,7 @@ public class UserPanel extends JPanel implements ActionListener {
         this.user = user;
         usernameLabel.setText("Welcome, " + user.getUsername());
         updateSubscribedToJList();
-        updateAvailableUsersToSubJList();
+        updateAvailableUsersToSubscribersJList();
         updateNotificationButton(user);
     }
 
@@ -226,15 +228,13 @@ public class UserPanel extends JPanel implements ActionListener {
         notificationsButton.repaint();
     }
 
-    private void updateAvailableUsersToSubJList() {
+    private void updateAvailableUsersToSubscribersJList() {
         List<User> availableUsersList = databaseServiceSingleton.getAvailableToSubscribeUsers(user);
         DefaultListModel<User> availableToSubscribeUsersListModel = new DefaultListModel<>();
         for (User user : availableUsersList) {
             availableToSubscribeUsersListModel.addElement(user);
         }
-        availableToSubscribeUsersList.setModel(availableToSubscribeUsersListModel);
-        availableToSubscribeUsersList.revalidate();
-        availableToSubscribeUsersList.repaint();
+        updateJList(availableToSubscribeUsersList, availableToSubscribeUsersListModel);
     }
 
     private void updateSubscribedToJList() {
@@ -243,8 +243,12 @@ public class UserPanel extends JPanel implements ActionListener {
         for (User user : subscribedToUsers) {
             subscribedToUsersListModel.addElement(user);
         }
-        subscribedUsersList.setModel(subscribedToUsersListModel);
-        subscribedUsersList.revalidate();
-        subscribedUsersList.repaint();
+        updateJList(subscribedUsersList, subscribedToUsersListModel);
+    }
+
+    private void updateJList(JList<User> userJList, DefaultListModel<User> listModel) {
+        userJList.setModel(listModel);
+        userJList.revalidate();
+        userJList.repaint();
     }
 }

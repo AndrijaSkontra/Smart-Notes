@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Class responsible for entering the Login and Register Panel.
+ */
 public class AuthPanel extends JPanel implements ActionListener {
 
     @Getter

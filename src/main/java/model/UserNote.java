@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Class representing a UserNote in the database.
+ */
 @Entity
 @Table(name = "users_notes")
 public class UserNote {
